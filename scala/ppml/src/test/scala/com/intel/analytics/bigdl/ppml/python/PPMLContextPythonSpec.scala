@@ -262,12 +262,13 @@ class PPMLContextPythonSpec extends DataFrameHelper{
       .map(v => s"${v.get(0)},${v.get(1)}").mkString("\n")
 
     println("******************************************")
-    println("1.partition num: " + df.rdd.partitions.length)
+    println("1.partition num: " + df.rdd.getNumPartitions)
+    df.rdd.glom().foreach(arr => arr.foreach(rdd => println(rdd)))
 
-    df = df.repartition(2)
-
+    df = df.repartition(numPartitions = 3, partitionExprs = 'language)
     println("******************************************")
-    println("2.partition num: " + df.rdd.partitions.length)
+    println("2.partition num: " + df.rdd.getNumPartitions)
+    df.rdd.glom().foreach(arr => arr.foreach(rdd => println(rdd)))
     // write a json file
     val jsonPath = new File(dir, "json/encrypted").getCanonicalPath
     val encryptedDataFrameWriter = ppmlContextPython.write(sc, df, "AES/CBC/PKCS5Padding")
