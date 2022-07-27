@@ -252,4 +252,32 @@ class PPMLContextPythonSpec extends DataFrameHelper{
     jsonContent should be (dataContent)
   }
 
+  "write and read encrypted small json file" should "work" in {
+    val sc = PPMLContext.initPPMLContext(conf, "testApp", ppmlArgs)
+    val sparkSession = sc.getSparkSession()
+    import sparkSession.implicits._
+    val data = Seq(("Java", "20000"), ("Python", "100000"), ("Scala", "3000"))
+    var df = data.toDF("language", "user")
+    val dataContent = df.orderBy("language").collect()
+      .map(v => s"${v.get(0)},${v.get(1)}").mkString("\n")
+
+    df = df.repartition(4)
+    // write a json file
+    val jsonPath = new File(dir, "json/encrypted").getCanonicalPath
+    val encryptedDataFrameWriter = ppmlContextPython.write(sc, df, "AES/CBC/PKCS5Padding")
+    ppmlContextPython.mode(encryptedDataFrameWriter, "overwrite")
+    ppmlContextPython.json(encryptedDataFrameWriter, jsonPath)
+
+    // read a json file
+    val encryptedDataFrameReader = ppmlContextPython.read(sc, "AES/CBC/PKCS5Padding")
+    val jsonDF = ppmlContextPython.json(encryptedDataFrameReader, jsonPath)
+
+    jsonDF.count() should be (3)
+
+    val jsonContent = jsonDF.orderBy("language").collect()
+      .map(v => s"${v.get(0)},${v.get(1)}").mkString("\n")
+
+    jsonContent should be (dataContent)
+  }
+
 }
