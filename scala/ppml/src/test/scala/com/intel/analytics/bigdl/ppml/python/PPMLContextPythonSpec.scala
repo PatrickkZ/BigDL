@@ -266,7 +266,7 @@ class PPMLContextPythonSpec extends DataFrameHelper{
 
     println("******************************************")
     println("1.partition num: " + df.rdd.getNumPartitions)
-    println("1.glom: " + df.rdd.glom())
+    println("1.glom: " + df.rdd.glom().collect().mkString("Array(", ", ", ")"))
 //    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
 //    var count1 = 0
 //    df.rdd.glom().foreach(arr => {
@@ -280,7 +280,7 @@ class PPMLContextPythonSpec extends DataFrameHelper{
     df = df.repartition(numPartitions = 5)
     println("******************************************")
     println("2.partition num: " + df.rdd.getNumPartitions)
-    println("2.glom: " + df.rdd.glom())
+    println("2.glom: " + df.rdd.glom().collect().mkString("Array(", ", ", ")"))
 //    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
 //    var count2 = 0
 //    df.rdd.glom().foreach(arr => {
