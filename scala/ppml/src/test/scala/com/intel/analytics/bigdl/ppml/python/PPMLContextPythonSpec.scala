@@ -266,27 +266,29 @@ class PPMLContextPythonSpec extends DataFrameHelper{
 
     println("******************************************")
     println("1.partition num: " + df.rdd.getNumPartitions)
-    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
-    var count1 = 0
-    df.rdd.glom().foreach(arr => {
-      arr.foreach(rdd => {
-        println("partition" + count1 + rdd)
-        count1 = count1 + 1
-      })
-    })
+    println("1.glom: " + df.rdd.glom())
+//    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
+//    var count1 = 0
+//    df.rdd.glom().foreach(arr => {
+//      arr.foreach(rdd => {
+//        println("partition" + count1 + rdd)
+//        count1 = count1 + 1
+//      })
+//    })
 
     // df = df.repartition(numPartitions = 3, partitionExprs = 'language)
     df = df.repartition(numPartitions = 5)
     println("******************************************")
     println("2.partition num: " + df.rdd.getNumPartitions)
-    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
-    var count2 = 0
-    df.rdd.glom().foreach(arr => {
-      arr.foreach(rdd => {
-        println("partition" + count2 + rdd)
-        count2 = count2 + 1
-      })
-    })
+    println("2.glom: " + df.rdd.glom())
+//    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
+//    var count2 = 0
+//    df.rdd.glom().foreach(arr => {
+//      arr.foreach(rdd => {
+//        println("partition" + count2 + rdd)
+//        count2 = count2 + 1
+//      })
+//    })
     // write a json file
     val jsonPath = new File(dir, "json/encrypted").getCanonicalPath
     val encryptedDataFrameWriter = ppmlContextPython.write(sc, df, "AES/CBC/PKCS5Padding")
