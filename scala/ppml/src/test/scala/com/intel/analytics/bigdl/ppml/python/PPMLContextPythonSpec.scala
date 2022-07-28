@@ -258,6 +258,9 @@ class PPMLContextPythonSpec extends DataFrameHelper{
     println("########## SPARK CONF ##############")
     println(sparkSession.sparkContext.getConf.getAll.mkString("Array(", ", ", ")"))
 
+    println("########## DefaultParallelism #########")
+    println("DefaultParallelism is: " + sparkSession.sparkContext.defaultParallelism)
+
     import sparkSession.implicits._
     val data = Seq(("Java", "20000"), ("Python", "100000"), ("Scala", "3000"))
     var df = data.toDF("language", "user")
@@ -266,41 +269,28 @@ class PPMLContextPythonSpec extends DataFrameHelper{
 
     println("******************************************")
     println("1.partition num: " + df.rdd.getNumPartitions)
-    val partitions = df.rdd.glom().map(x => x.mkString(","))
-    partitions.foreach(println)
-
-
-//    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
-//    var count1 = 0
-//    df.rdd.glom().foreach(arr => {
-//      arr.foreach(rdd => {
-//        println("partition" + count1 + rdd)
-//        count1 = count1 + 1
-//      })
-//    })
+    df.rdd.mapPartitionsWithIndex((x,y) => {
+      println(s"partitions $x has ${y.length} records")
+      y.map(a => a.mkString)
+    }).collect.foreach(println)
 
     // df = df.repartition(numPartitions = 3, partitionExprs = 'language)
-    df = df.repartition(numPartitions = 5)
+    df = df.repartition(numPartitions = 4)
     println("******************************************")
     println("2.partition num: " + df.rdd.getNumPartitions)
-    val partitions2 = df.rdd.glom().map(x => x.mkString(","))
-    partitions2.foreach(println)
-//    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
-//    var count2 = 0
-//    df.rdd.glom().foreach(arr => {
-//      arr.foreach(rdd => {
-//        println("partition" + count2 + rdd)
-//        count2 = count2 + 1
-//      })
-//    })
+    df.rdd.mapPartitionsWithIndex((x,y) => {
+      println(s"partitions $x has ${y.length} records")
+      y.map(a => a.mkString)
+    }).collect.foreach(println)
+
     // write a json file
-    val jsonPath = new File(dir, "json/encrypted").getCanonicalPath
-    val encryptedDataFrameWriter = ppmlContextPython.write(sc, df, "AES/CBC/PKCS5Padding")
+    val jsonPath = "/home/zehuan/tmp"
+    val encryptedDataFrameWriter = ppmlContextPython.write(sc, df, "plain_text")
     ppmlContextPython.mode(encryptedDataFrameWriter, "overwrite")
     ppmlContextPython.json(encryptedDataFrameWriter, jsonPath)
 
     // read a json file
-    val encryptedDataFrameReader = ppmlContextPython.read(sc, "AES/CBC/PKCS5Padding")
+    val encryptedDataFrameReader = ppmlContextPython.read(sc, "plain_text")
     val jsonDF = ppmlContextPython.json(encryptedDataFrameReader, jsonPath)
 
     jsonDF.count() should be (3)
