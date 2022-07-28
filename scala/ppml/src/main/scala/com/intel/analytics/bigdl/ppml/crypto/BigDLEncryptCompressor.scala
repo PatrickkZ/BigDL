@@ -72,13 +72,17 @@ class BigDLEncryptCompressor(cryptoMode: CryptoMode, dataKeyPlaintext: String) e
       println("lv2Buffer is null ? " + (lv2Buffer == null))
       println("lv2Off =" + lv2Off)
       println("lv2Len = " + lv2Len)
-      val o = bigdlEncrypt.doFinal(this.lv2Buffer, this.lv2Off, this.lv2Len)
-      bytesRead += this.lv2Len
-      isFinished = true
-      o._1 ++ o._2
-      o._1.copyToArray(b, 0)
-      o._2.copyToArray(b, o._1.length)
-      o._1.length + o._2.length
+      if (this.lv2Buffer != null) {
+        val o = bigdlEncrypt.doFinal(this.lv2Buffer, this.lv2Off, this.lv2Len)
+        bytesRead += this.lv2Len
+        isFinished = true
+        o._1 ++ o._2
+        o._1.copyToArray(b, 0)
+        o._2.copyToArray(b, o._1.length)
+        o._1.length + o._2.length
+      } else {
+        0
+      }
     } else {
       val o = if (hasHeader) {
         val o = bigdlEncrypt.update(this.lv2Buffer, this.lv2Off, this.lv2Len)
