@@ -285,12 +285,12 @@ class PPMLContextPythonSpec extends DataFrameHelper{
 
     // write a json file
     val jsonPath = "/home/zehuan/tmp"
-    val encryptedDataFrameWriter = ppmlContextPython.write(sc, df, "plain_text")
+    val encryptedDataFrameWriter = ppmlContextPython.write(sc, df, "AES/CBC/PKCS5Padding")
     ppmlContextPython.mode(encryptedDataFrameWriter, "overwrite")
     ppmlContextPython.json(encryptedDataFrameWriter, jsonPath)
 
     // read a json file
-    val encryptedDataFrameReader = ppmlContextPython.read(sc, "plain_text")
+    val encryptedDataFrameReader = ppmlContextPython.read(sc, "AES/CBC/PKCS5Padding")
     val jsonDF = ppmlContextPython.json(encryptedDataFrameReader, jsonPath)
 
     jsonDF.count() should be (3)
