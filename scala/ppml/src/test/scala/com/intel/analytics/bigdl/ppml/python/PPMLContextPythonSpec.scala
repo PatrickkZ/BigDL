@@ -269,8 +269,10 @@ class PPMLContextPythonSpec extends DataFrameHelper{
     df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
     var count1 = 0
     df.rdd.glom().foreach(arr => {
-      arr.foreach(rdd => println("partition" + count1 + rdd))
-      count1 = count1 + 1
+      arr.foreach(rdd => {
+        println("partition" + count1 + rdd)
+        count1 = count1 + 1
+      })
     })
 
     // df = df.repartition(numPartitions = 3, partitionExprs = 'language)
@@ -280,8 +282,10 @@ class PPMLContextPythonSpec extends DataFrameHelper{
     df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
     var count2 = 0
     df.rdd.glom().foreach(arr => {
-      arr.foreach(rdd => println("partition" + count2 + rdd))
-      count2 = count2 + 1
+      arr.foreach(rdd => {
+        println("partition" + count2 + rdd)
+        count2 = count2 + 1
+      })
     })
     // write a json file
     val jsonPath = new File(dir, "json/encrypted").getCanonicalPath
