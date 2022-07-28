@@ -255,6 +255,9 @@ class PPMLContextPythonSpec extends DataFrameHelper{
   "write and read encrypted small json file" should "work" in {
     val sc = PPMLContext.initPPMLContext(conf, "testApp", ppmlArgs)
     val sparkSession = sc.getSparkSession()
+    println("########## SPARK CONF ##############")
+    println(sparkSession.sparkContext.getConf.getAll.mkString("Array(", ", ", ")"))
+
     import sparkSession.implicits._
     val data = Seq(("Java", "20000"), ("Python", "100000"), ("Scala", "3000"))
     var df = data.toDF("language", "user")
@@ -263,22 +266,22 @@ class PPMLContextPythonSpec extends DataFrameHelper{
 
     println("******************************************")
     println("1.partition num: " + df.rdd.getNumPartitions)
+    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
+    var count1 = 0
     df.rdd.glom().foreach(arr => {
-      println("######### Start ###########")
-      println("partition num: " + arr.length)
-      arr.foreach(rdd => println(rdd))
-      println("######### End ###########")
+      arr.foreach(rdd => println("partition" + count1 + rdd))
+      count1 = count1 + 1
     })
 
     // df = df.repartition(numPartitions = 3, partitionExprs = 'language)
     df = df.repartition(numPartitions = 5)
     println("******************************************")
     println("2.partition num: " + df.rdd.getNumPartitions)
+    df.rdd.glom().foreach(arr => println("partition num: " + arr.length))
+    var count2 = 0
     df.rdd.glom().foreach(arr => {
-      println("######### Start ###########")
-      println("partition num: " + arr.length)
-      arr.foreach(rdd => println(rdd))
-      println("######### End ###########")
+      arr.foreach(rdd => println("partition" + count2 + rdd))
+      count2 = count2 + 1
     })
     // write a json file
     val jsonPath = new File(dir, "json/encrypted").getCanonicalPath
