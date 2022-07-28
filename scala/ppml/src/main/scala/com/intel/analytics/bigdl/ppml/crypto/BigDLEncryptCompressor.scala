@@ -73,8 +73,8 @@ class BigDLEncryptCompressor(cryptoMode: CryptoMode, dataKeyPlaintext: String) e
     // lazy encrypt, in order to doFinal in the right time.
     if (tryFinished) {
       println("compress: lv2Buffer=null? " + (lv2Buffer == null))
-      println("setInput: lv2Off = " + lv2Off)
-      println("setInput: lv2Len = " + lv2Len)
+      println("compress: lv2Off = " + lv2Off)
+      println("compress: lv2Len = " + lv2Len)
       val o = bigdlEncrypt.doFinal(this.lv2Buffer, this.lv2Off, this.lv2Len)
       bytesRead += this.lv2Len
       isFinished = true
