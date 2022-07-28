@@ -33,6 +33,9 @@ class BigDLEncryptCompressor(cryptoMode: CryptoMode, dataKeyPlaintext: String) e
   private var bytesWritten = 0L
 
   override def setInput(b: Array[Byte], off: Int, len: Int): Unit = {
+    println("setInput: b=null? " + (b == null))
+    println("setInput: off = " + off)
+    println("setInput: len = " + len)
     this.b = b
     this.off = off
     this.len = len
@@ -69,9 +72,9 @@ class BigDLEncryptCompressor(cryptoMode: CryptoMode, dataKeyPlaintext: String) e
   override def compress(b: Array[Byte], off: Int, len: Int): Int = {
     // lazy encrypt, in order to doFinal in the right time.
     if (tryFinished) {
-      if (this.lv2Buffer == null) {
-        this.lv2Buffer = Array()
-      }
+      println("compress: lv2Buffer=null? " + (lv2Buffer == null))
+      println("setInput: lv2Off = " + lv2Off)
+      println("setInput: lv2Len = " + lv2Len)
       val o = bigdlEncrypt.doFinal(this.lv2Buffer, this.lv2Off, this.lv2Len)
       bytesRead += this.lv2Len
       isFinished = true
