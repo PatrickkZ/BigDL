@@ -184,7 +184,12 @@ class MMCVRayEpochRunner(BaseRayRunner, EpochBasedRunner):
 
     def get_state_dict(self):
         """Returns the state of the runner."""
-        pass
+        state = {
+            "epoch": self._max_epochs,
+            "model": self.model.state_dict(),
+            "optimizer": self.optimizer.state_dict()
+        }
+        return state
 
     def load_state_dict(self, state):
         """Sets the state of the model."""
